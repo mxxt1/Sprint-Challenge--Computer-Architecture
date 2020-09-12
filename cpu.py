@@ -83,38 +83,44 @@ class CPU:
         running = True
         while running:
             inst = self.ram[self.pc]
-            if inst == 130:                 # this is LDI, saving the number to reg
+            #LDI value in registry
+            if inst == 130: 
                 operand_a = self.ram[self.pc + 1]
                 operand_b = self.ram[self.pc + 2]
                 self.reg[operand_a] = operand_b
                 self.pc += 3
-            elif inst == 71:               # this is PRN, printing the number
+            #PRN print
+            elif inst == 71:
                 reg_index = self.ram[self.pc + 1]
                 print(self.reg[reg_index])
                 self.pc += 1
-            elif inst == 1:                #  this is to stop running
+            elif inst == 1:         
                 running = False
-            elif inst == 162:                # this is MUL, multiplying the two numbers
+            #MUL
+            elif inst == 162:
                 firstNum = self.ram[self.pc + 1]
                 secondNum = self.ram[self.pc + 2]
                 answer = self.reg[firstNum] * self.reg[secondNum]
                 self.reg[firstNum] = answer
                 self.pc += 3
-            elif inst == 69:               # push
+            #PUSH
+            elif inst == 69:
                 self.sp -= 1
                 reg_num = self.ram[self.pc + 1]
                 value = self.reg[reg_num]
                 push_address = self.sp
                 self.ram[push_address] = value
                 self.pc += 2
-            elif inst == 70:               # pop
+            #POP
+            elif inst == 70:
                 pop_address = self.sp
                 value = self.ram[pop_address]
                 reg_num = self.ram[self.pc + 1]
                 self.reg[reg_num] = value
                 self.sp += 1
                 self.pc += 2
-            elif inst == 80:                # call
+            #CALL
+            elif inst == 80:
                 return_address = self.pc + 2
                 self.reg[7] -= 1
                 push_address = self.reg[7]
@@ -122,11 +128,13 @@ class CPU:
                 reg_num = self.ram[self.pc+1]
                 subroutine_addr = self.reg[reg_num]
                 self.pc = subroutine_addr
-            elif inst == 17:                # return
+            #RETURN
+            elif inst == 17:
                 pop_address = self.reg[7]
                 return_address = self.ram[pop_address]
                 self.pc = return_address
-            elif inst == 160:               # add
+            #ADD
+            elif inst == 160:
                 first_num = self.ram[self.pc + 1]
                 second_num = self.ram[self.pc + 2]
                 answer = self.reg[first_num] + self.reg[second_num]
@@ -146,6 +154,26 @@ class CPU:
                 elif self.reg[first_num] > self.reg[second_num]:
                     self.G = 1
                 self.pc += 3
+            #JMP
+            elif inst == 84:
+                jumping = self.ram[self.pc + 1]
+                self.pc = self.reg[jumping]
+            #JEQ
+            elif inst == 85:
+                if self.E == 1:
+                    jumping = self.ram[self.pc + 1]
+                    self.pc = self.reg[jumping]
+                else:
+                    self.pc += 2
+            #JNE
+            elif inst == 86:
+                if self.E == 0:
+                    jumping = self.ram[self.pc + 1]
+                    self.pc = self.reg[jumping]
+                else:
+                    self.pc += 2
+            else:
+                self.pc += 1
 
 
     def ram_read(self, MAR):
